@@ -55,6 +55,10 @@
 #define __EMULATE_UUID 1
 #endif // __clang__
 
+#ifdef __APPLE__
+#define __EMULATE_UUID 1
+#endif // MACOS
+
 #ifdef __EMULATE_UUID
 #define __declspec(x)
 #endif // __EMULATE_UUID

@@ -787,11 +787,11 @@ namespace wi::scene
 					;
 
 				desc.size =
-					AlignTo(sizeof(IndirectDrawArgsIndexedInstanced), alignment) +	// indirect args
-					AlignTo(allocated_impostor_capacity * sizeof(uint) * 6, alignment) +	// indices (must overestimate here for 32-bit indices, because we create 16 bit and 32 bit descriptors)
-					AlignTo(allocated_impostor_capacity * sizeof(MeshComponent::Vertex_POS32) * 4, alignment) +	// vertices
-					AlignTo(allocated_impostor_capacity * sizeof(MeshComponent::Vertex_NOR) * 4, alignment) +	// vertices
-					AlignTo(allocated_impostor_capacity * sizeof(uint2), alignment)		// impostordata
+					AlignTo((uint64_t)sizeof(IndirectDrawArgsIndexedInstanced), alignment) +	// indirect args
+					AlignTo((uint64_t)allocated_impostor_capacity * sizeof(uint) * 6, alignment) +	// indices (must overestimate here for 32-bit indices, because we create 16 bit and 32 bit descriptors)
+					AlignTo((uint64_t)allocated_impostor_capacity * sizeof(MeshComponent::Vertex_POS32) * 4, alignment) +	// vertices
+					AlignTo((uint64_t)allocated_impostor_capacity * sizeof(MeshComponent::Vertex_NOR) * 4, alignment) +	// vertices
+					AlignTo((uint64_t)allocated_impostor_capacity * sizeof(uint2), alignment)		// impostordata
 				;
 				device->CreateBuffer(&desc, nullptr, &impostorBuffer);
 				device->SetName(&impostorBuffer, "impostorBuffer");
@@ -799,7 +799,7 @@ namespace wi::scene
 				uint64_t buffer_offset = 0ull;
 
 				const uint32_t indirect_stride = sizeof(IndirectDrawArgsIndexedInstanced);
-				buffer_offset = AlignTo(buffer_offset, sizeof(IndirectDrawArgsIndexedInstanced)); // additional structured buffer alignment
+				buffer_offset = AlignTo(buffer_offset, (uint64_t)sizeof(IndirectDrawArgsIndexedInstanced)); // additional structured buffer alignment
 				buffer_offset = AlignTo(buffer_offset, alignment);
 				impostor_indirect.offset = buffer_offset;
 				impostor_indirect.size = sizeof(IndirectDrawArgsIndexedInstanced);
@@ -2990,13 +2990,13 @@ namespace wi::scene
 						}
 					}
 					current_sample *= info.channel_count;
-					current_sample = std::min(current_sample, info.sample_count);
+					current_sample = std::min(current_sample, (uint64_t)info.sample_count);
 
 					float voice = 0;
 					const int sample_count = 64;
 					for (int sam = 0; sam < sample_count; ++sam)
 					{
-						voice = std::max(voice, std::abs((float)info.samples[std::min(current_sample + sam, info.sample_count)] / 32768.0f));
+						voice = std::max(voice, std::abs((float)info.samples[std::min(current_sample + sam, (uint64_t)info.sample_count)] / 32768.0f));
 					}
 					const float strength = 0.4f;
 					if (voice > 0.1f)

@@ -22,12 +22,20 @@
 #define wiGetProcAddress(handle,name) GetProcAddress(handle, name)
 #elif defined(__SCE__)
 #define PLATFORM_PS5
-#else
+#elif defined(__linux__)
 #define PLATFORM_LINUX
 #include <dlfcn.h>
 #define wiLoadLibrary(name) dlopen(name, RTLD_LAZY)
 #define wiGetProcAddress(handle,name) dlsym(handle, name)
 typedef void* HMODULE;
+#elif defined(__APPLE__)
+#define PLATFORM_MACOS
+#include <dlfcn.h>
+#define wiLoadLibrary(name) dlopen(name, RTLD_LAZY)
+#define wiGetProcAddress(handle,name) dlsym(handle, name)
+typedef void* HMODULE;
+#else
+#error "Platform not supported"
 #endif // _WIN32
 
 #ifdef SDL2
