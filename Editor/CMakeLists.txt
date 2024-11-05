@@ -38,7 +38,7 @@ add_custom_command(
 )
 
 include(GNUInstallDirs)
-set(EDITOR_INSTALL_FOLDER "${CMAKE_INSTALL_LIBDIR}/WickedEngine/Editor")
+set(EDITOR_INSTALL_FOLDER "${CMAKE_INSTALL_BINDIR}/WickedEngine/Editor")
 
 # WickedEngineEditor executable
 install(TARGETS WickedEngineEditor RUNTIME DESTINATION ${EDITOR_INSTALL_FOLDER})
