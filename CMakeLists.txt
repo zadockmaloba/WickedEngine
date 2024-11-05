@@ -20,7 +20,9 @@ option(WICKED_IMGUI_EXAMPLE "Build WickedEngine imgui example" ON)
 
 include(CMakeDependentOption)
 
-if(UNIX)
+if(APPLE)
+	option(WICKED_MACOS_TEMPLATE "Build WickedEngine Linux template" ON)
+elseif(UNIX AND NOT APPLE)
     option(WICKED_LINUX_TEMPLATE "Build WickedEngine Linux template" ON)
 elseif(WIN32)
     option(WICKED_WINDOWS_TEMPLATE "Build WickedEngine Windows template" ON)
