@@ -20,6 +20,10 @@ if (WIN32)
 	set(TARGET_NAME WickedEngine_Windows)
 else ()
 	set(TARGET_NAME WickedEngine_Linux)
+	if(APPLE)
+		set(TARGET_NAME WickedEngine_MacOS)
+		find_package(Vulkan REQUIRED volk MoltenVK SPIRV-Tools)
+	endif()
 	find_package(SDL2 REQUIRED)
 	find_package(OpenImageDenoise "${MIN_OpenImageDenoise_VERSION}" QUIET)
 	find_package(Threads REQUIRED)
@@ -92,12 +96,25 @@ else ()
 	# `ska::flat_hash_map` has issues on linux because of the hash function being identity
 	# in same cases. Use `robin_hood::unordered_flat_map` instead
 	target_compile_definitions(${TARGET_NAME} PUBLIC WI_UNORDERED_MAP_TYPE=2)
-
-	target_link_libraries(${TARGET_NAME} PUBLIC
-		Threads::Threads
-		SDL2::SDL2
-		$<$<BOOL:${OpenImageDenoise_FOUND}>:OpenImageDenoise> # links OpenImageDenoise only if it's found
-	)
+	
+	if(APPLE)
+		#https://cmake.org/cmake/help/latest/module/FindVulkan.html
+		target_link_libraries(${TARGET_NAME} PUBLIC
+			Threads::Threads
+			SDL2::SDL2
+			Vulkan::Vulkan
+			Vulkan::volk
+			Vulkan::MoltenVK
+			Vulkan::SPIRV-Tools
+			$<$<BOOL:${OpenImageDenoise_FOUND}>:OpenImageDenoise> # links OpenImageDenoise only if it's found
+		)
+	else()
+		target_link_libraries(${TARGET_NAME} PUBLIC
+			Threads::Threads
+			SDL2::SDL2
+			$<$<BOOL:${OpenImageDenoise_FOUND}>:OpenImageDenoise> # links OpenImageDenoise only if it's found
+		)
+	endif(APPLE)
 	set(WICKEDENGINE_STATIC_LIBRARIES ${WICKEDENGINE_STATIC_LIBRARIES} FAudio)
 
 	if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")

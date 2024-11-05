@@ -2438,6 +2438,10 @@ using namespace vulkan_internal;
 
 		instanceExtensions.push_back(VK_KHR_SURFACE_EXTENSION_NAME);
 
+#if __APPLE__ //https://stackoverflow.com/a/72791361
+		instanceExtensions.push_back(VK_KHR_PORTABILITY_ENUMERATION_EXTENSION_NAME);
+#endif
+
 #if defined(VK_USE_PLATFORM_WIN32_KHR)
 		instanceExtensions.push_back(VK_KHR_WIN32_SURFACE_EXTENSION_NAME);
 #elif SDL2
@@ -2500,6 +2504,9 @@ using namespace vulkan_internal;
 			createInfo.ppEnabledLayerNames = instanceLayers.data();
 			createInfo.enabledExtensionCount = static_cast<uint32_t>(instanceExtensions.size());
 			createInfo.ppEnabledExtensionNames = instanceExtensions.data();
+#ifdef __APPLE__ //https://stackoverflow.com/a/72791361
+			createInfo.flags = VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
+#endif
 
 			VkDebugUtilsMessengerCreateInfoEXT debugUtilsCreateInfo = { VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT };
 
@@ -2553,6 +2560,9 @@ using namespace vulkan_internal;
 
 			const wi::vector<const char*> required_deviceExtensions = {
 				VK_KHR_SWAPCHAIN_EXTENSION_NAME,
+#if __APPLE__ //https://stackoverflow.com/a/72791361
+				"VK_KHR_portability_subset",
+#endif
 			};
 			wi::vector<const char*> enabled_deviceExtensions;
 
@@ -2786,13 +2796,17 @@ using namespace vulkan_internal;
 
 			assert(features2.features.imageCubeArray == VK_TRUE);
 			assert(features2.features.independentBlend == VK_TRUE);
+#ifndef  __APPLE__ //https://community.khronos.org/t/does-vulkan-support-geometry-shader-in-android-or-ios/104859
 			assert(features2.features.geometryShader == VK_TRUE);
+#endif
 			assert(features2.features.samplerAnisotropy == VK_TRUE);
 			assert(features2.features.shaderClipDistance == VK_TRUE);
 			assert(features2.features.textureCompressionBC == VK_TRUE);
 			assert(features2.features.occlusionQueryPrecise == VK_TRUE);
 			assert(features_1_2.descriptorIndexing == VK_TRUE);
+#ifndef  __APPLE__ //FIXME: Dynamic rendering on MacOS requires MoltenVK
 			assert(features_1_3.dynamicRendering == VK_TRUE);
+#endif
 
 			// Init adapter properties
 			vendorId = properties2.properties.vendorID;
@@ -3256,6 +3270,7 @@ using namespace vulkan_internal;
 
 
 			// Transitions:
+#ifndef __APPLE__
 			{
 				CopyAllocator::CopyCMD cmd = copyAllocator.allocate(0);
 				VkImageMemoryBarrier2 barrier = {};
@@ -3292,6 +3307,7 @@ using namespace vulkan_internal;
 
 				copyAllocator.submit(cmd);
 			}
+#endif
 
 			VkImageViewCreateInfo viewInfo = {};
 			viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
