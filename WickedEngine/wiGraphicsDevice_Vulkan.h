@@ -2,7 +2,7 @@
 #include "CommonInclude.h"
 #include "wiPlatform.h"
 
-#if defined(PLATFORM_WINDOWS_DESKTOP) || defined(PLATFORM_LINUX)
+#if defined(PLATFORM_WINDOWS_DESKTOP) || defined(PLATFORM_LINUX) || defined(PLATFORM_MACOS)
 #define WICKEDENGINE_BUILD_VULKAN
 #endif // PLATFORM_WINDOWS_DESKTOP || PLATFORM_LINUX
 
