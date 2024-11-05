@@ -65,6 +65,41 @@ file(GLOB HEADER_FILES CONFIGURE_DEPENDS *.h)
 file(GLOB SOURCE_FILES CONFIGURE_DEPENDS *.cpp)
 list(REMOVE_ITEM SOURCE_FILES offlineshadercompiler.cpp)
 
+if(UNIX)
+# Find all shader files in the shaders directory
+file(GLOB SHADER_FILES ${CMAKE_CURRENT_SOURCE_DIR}/shaders/*.hlsl)
+
+# Specify output directory for compiled shader files
+set(SHADER_OUTPUT_DIR ${CMAKE_BINARY_DIR}/shaders)
+
+# Make sure the output directory exists
+file(MAKE_DIRECTORY ${SHADER_OUTPUT_DIR})
+
+# Loop over each shader file and add a command to compile it
+foreach(tmp ${SHADER_FILES})
+    # Get the filename without the directory (e.g., "shader.hlsl")
+    get_filename_component(FILE_NAME ${tmp} NAME)
+	if(${FILE_NAME} MATCHES "\\.hlsl$")
+		# Specify output file with .spv extension (e.g., "shader.spv")
+		set(OUTPUT_FILE ${SHADER_OUTPUT_DIR}/${FILE_NAME}.cso)
+
+		# Add custom command to compile the shader
+		add_custom_command(
+			OUTPUT ${OUTPUT_FILE}
+			COMMAND glslc -fshader-stage=vert ${tmp} -o ${OUTPUT_FILE}
+			DEPENDS ${tmp}
+			COMMENT "Compiling ${FILE_NAME} with glslc"
+		)
+
+		# Collect all output files to a custom target
+		list(APPEND SPV_OUTPUTS ${OUTPUT_FILE})
+	endif()
+endforeach()
+
+# Create a custom target to compile all shaders
+add_custom_target(compile_shaders ALL DEPENDS ${SPV_OUTPUTS})
+endif(UNIX)
+
 add_library(${TARGET_NAME} ${WICKED_LIBRARY_TYPE}
 	${SOURCE_FILES}
 	${HEADER_FILES}
@@ -72,6 +107,9 @@ add_library(${TARGET_NAME} ${WICKED_LIBRARY_TYPE}
 
 add_library(WickedEngine ALIAS ${TARGET_NAME})
 set_target_properties(${TARGET_NAME} PROPERTIES PUBLIC_HEADER "${HEADER_FILES}")
+if(UNIX)
+	add_dependencies(${TARGET_NAME} compile_shaders)
+endif(UNIX)
 
 target_include_directories(${TARGET_NAME} SYSTEM PUBLIC
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
