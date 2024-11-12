@@ -33,7 +33,11 @@ else ()
 
         unset(SDL2_LIBRARY_FILE_LOCATION)
     endif()
-    set(LIBDXCOMPILER "libdxcompiler.so")
+	if(APPLE)
+		set(LIBDXCOMPILER "libdxcompiler.dylib")
+	else()
+		set(LIBDXCOMPILER "libdxcompiler.so")
+	endif(APPLE)
 endif()
 
 if (NOT TARGET WickedEngine::WickedEngine)

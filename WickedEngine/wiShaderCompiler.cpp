@@ -15,7 +15,7 @@
 #define CComPtr Microsoft::WRL::ComPtr
 #endif // _WIN32
 
-#ifdef PLATFORM_LINUX
+#if defined(PLATFORM_LINUX)  || defined(PLATFORM_MACOS)
 #define SHADERCOMPILER_ENABLED
 #define SHADERCOMPILER_ENABLED_DXCOMPILER
 #define __RPC_FAR
@@ -58,9 +58,13 @@ namespace wi::shadercompiler
 #elif defined(PLATFORM_LINUX)
 			const std::string library = "./libdxcompiler" + modifier + ".so";
 			HMODULE dxcompiler = wiLoadLibrary(library.c_str());
+#elif defined(PLATFORM_MACOS)
+			const std::string library = "./libdxcompiler" + modifier + ".dylib";
+			HMODULE dxcompiler = wiLoadLibrary(library.c_str());
 #endif
 			if (dxcompiler != nullptr)
 			{
+				fprintf(stderr, "Error loading library: %s \n", library.c_str());
 				DxcCreateInstance = (DxcCreateInstanceProc)wiGetProcAddress(dxcompiler, "DxcCreateInstance");
 				if (DxcCreateInstance != nullptr)
 				{

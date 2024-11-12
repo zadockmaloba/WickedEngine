@@ -21,9 +21,11 @@ option(WICKED_IMGUI_EXAMPLE "Build WickedEngine imgui example" ON)
 include(CMakeDependentOption)
 
 if(APPLE)
-	option(WICKED_MACOS_TEMPLATE "Build WickedEngine Linux template" ON)
+	option(WICKED_MACOS_TEMPLATE "Build WickedEngine MacOS template" ON)
+	option(BUILD_DXC "Build Direct X shader compiler" ON)
 elseif(UNIX AND NOT APPLE)
     option(WICKED_LINUX_TEMPLATE "Build WickedEngine Linux template" ON)
+	option(BUILD_DXC "Build Direct X shader compiler" OFF)
 elseif(WIN32)
     option(WICKED_WINDOWS_TEMPLATE "Build WickedEngine Windows template" ON)
 endif()
@@ -78,10 +80,40 @@ if (WICKED_IMGUI_EXAMPLE)
     add_subdirectory(Samples/Example_ImGui_Docking)
 endif()
 
+if (WICKED_MACOS_TEMPLATE)
+	add_subdirectory(Samples/Template_MacOS)
+endif()
+
 if (WICKED_LINUX_TEMPLATE)
     add_subdirectory(Samples/Template_Linux)
 endif()
 
 if (WICKED_WINDOWS_TEMPLATE)
     add_subdirectory(Samples/Template_Windows)
+endif()
+
+if (BUILD_DXC)
+	# Check if the directory exists
+	if (NOT EXISTS "${CMAKE_SOURCE_DIR}/Thirdparty/DirectXShaderCompiler/CMakeLists.txt")
+	    message(STATUS "DirectXShaderCompiler submodule is missing, initializing...")
+
+	    # Add a custom command to initialize the submodule
+	    execute_process(
+	        COMMAND git submodule update --init --recursive
+	        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+	        RESULT_VARIABLE result
+	    )
+
+	    # Check if the submodule update was successful
+	    if (NOT result EQUAL 0)
+	        message(FATAL_ERROR "Failed to initialize submodule: DirectXShaderCompiler")
+	    endif()
+	else()
+	    message(STATUS "DirectXShaderCompiler submodule already initialized.")
+	endif()
+	include(Thirdparty/DirectXShaderCompiler/cmake/caches/PredefinedParams.cmake)
+	add_subdirectory(Thirdparty/DirectXShaderCompiler)
+	if(APPLE)
+		add_dependencies(WickedEngine_MacOS dxcompiler)
+	endif(APPLE)
 endif()

@@ -148,7 +148,11 @@ else ()
 
 	target_link_libraries(${TARGET_NAME} PRIVATE dl)
 
-	set(LIBDXCOMPILER "libdxcompiler.so")
+	if(APPLE)
+		set(LIBDXCOMPILER "libdxcompiler.dylib")
+	else()
+		set(LIBDXCOMPILER "libdxcompiler.so")
+	endif(APPLE)
 endif()
 
 target_link_libraries(${TARGET_NAME} PUBLIC ${WICKEDENGINE_STATIC_LIBRARIES})

@@ -24,7 +24,12 @@ else ()
 	target_link_libraries(WickedEngineEditor PUBLIC
 		WickedEngine
 	)
-	set(LIB_DXCOMPILER "libdxcompiler.so")
+
+	if(APPLE)
+		set(LIBDXCOMPILER "libdxcompiler.dylib")
+	else()
+		set(LIBDXCOMPILER "libdxcompiler.so")
+	endif(APPLE)
 
 endif ()
 
