@@ -222,3 +222,7 @@ wiShaderdump.h
 *.a
 *.elf
 *.prx
+
+# misc
+DummyConfigureOutput
+.DS_Store
