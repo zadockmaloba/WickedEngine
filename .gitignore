@@ -226,3 +226,5 @@ wiShaderdump.h
 # misc
 DummyConfigureOutput
 .DS_Store
+cmake/metal-cmake/metal-cpp/*
+cmake/metal-cmake/metal-cpp-extensions/*
