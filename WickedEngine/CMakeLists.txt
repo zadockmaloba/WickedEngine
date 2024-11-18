@@ -22,7 +22,7 @@ else ()
 	set(TARGET_NAME WickedEngine_Linux)
 	if(APPLE)
 		set(TARGET_NAME WickedEngine_MacOS)
-		find_package(Vulkan REQUIRED volk MoltenVK SPIRV-Tools)
+                find_package(Vulkan REQUIRED volk MoltenVK SPIRV-Tools)
 	endif()
 	find_package(SDL2 REQUIRED)
 	find_package(OpenImageDenoise "${MIN_OpenImageDenoise_VERSION}" QUIET)
@@ -99,13 +99,16 @@ else ()
 	
 	if(APPLE)
 		#https://cmake.org/cmake/help/latest/module/FindVulkan.html
-		target_link_libraries(${TARGET_NAME} PUBLIC
+                target_link_libraries(${TARGET_NAME}
+                    PRIVATE
+                        METAL_CPP
+                    PUBLIC
 			Threads::Threads
 			SDL2::SDL2
-			Vulkan::Vulkan
-			Vulkan::volk
-			Vulkan::MoltenVK
-			Vulkan::SPIRV-Tools
+                        Vulkan::Vulkan
+                        #Vulkan::volk
+                        Vulkan::MoltenVK
+                        Vulkan::SPIRV-Tools
 			$<$<BOOL:${OpenImageDenoise_FOUND}>:OpenImageDenoise> # links OpenImageDenoise only if it's found
 		)
 	else()
@@ -115,7 +118,7 @@ else ()
 			$<$<BOOL:${OpenImageDenoise_FOUND}>:OpenImageDenoise> # links OpenImageDenoise only if it's found
 		)
 	endif(APPLE)
-	set(WICKEDENGINE_STATIC_LIBRARIES ${WICKEDENGINE_STATIC_LIBRARIES} FAudio)
+        set(WICKEDENGINE_STATIC_LIBRARIES ${WICKEDENGINE_STATIC_LIBRARIES} FAudio METAL_CPP)
 
 	if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
 	target_compile_options(${TARGET_NAME} PRIVATE

@@ -21,7 +21,7 @@ option(WICKED_IMGUI_EXAMPLE "Build WickedEngine imgui example" ON)
 include(CMakeDependentOption)
 
 if(APPLE)
-	option(WICKED_MACOS_TEMPLATE "Build WickedEngine MacOS template" ON)
+	option(WICKED_MACOS_TEMPLATE "Build WickedEngine MacOS template" OFF)
 	option(BUILD_DXC "Build Direct X shader compiler" ON)
 elseif(UNIX AND NOT APPLE)
     option(WICKED_LINUX_TEMPLATE "Build WickedEngine Linux template" ON)
@@ -51,6 +51,9 @@ elseif(UNIX)
     set(DXC_TARGET "dxc")
 endif()
 
+if (APPLE)
+    add_subdirectory(cmake/metal-cmake)
+endif(APPLE)
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fdeclspec -fms-extensions")

@@ -21,13 +21,21 @@ if (WIN32)
 else ()
 	add_executable(WickedEngineEditor ${SOURCE_FILES})
 
-	target_link_libraries(WickedEngineEditor PUBLIC
-		WickedEngine
-	)
-
 	if(APPLE)
 		set(LIBDXCOMPILER "libdxcompiler.dylib")
+                #find_package(Vulkan REQUIRED volk MoltenVK SPIRV-Tools)
+		target_link_libraries(WickedEngineEditor PUBLIC
+			WickedEngine
+                        METAL_CPP
+                        #Vulkan::Vulkan
+                        #Vulkan::volk
+                        #Vulkan::MoltenVK
+                        #Vulkan::SPIRV-Tools
+		)
 	else()
+		target_link_libraries(WickedEngineEditor PUBLIC
+			WickedEngine
+		)
 		set(LIBDXCOMPILER "libdxcompiler.so")
 	endif(APPLE)
 
